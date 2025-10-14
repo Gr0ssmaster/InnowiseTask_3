@@ -16,7 +16,7 @@ namespace Task_3
         public SqlConnectionFactory()
         {
             var config = new ConfigurationBuilder().AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"),
-                optional: false, reloadOnChange: false).Build();
+                optional: false, reloadOnChange: false).AddUserSecrets<Program>().Build();
 
             _connectionString = config.GetConnectionString("DefaultConnection");
         }
