@@ -45,7 +45,7 @@ class Program
     static void DeleteTask(ITaskRepository repo)
     {
         Console.Write("Введи Id задачи для удаления: ");
-        int.TryParse( Console.ReadLine(), out var id);
+        int id = NumInput("Введите Id задачи: ");
         bool deleted = repo.DeleteTask(id);
         Console.WriteLine(deleted ? "Задача успешно удалена." : "Ошибка! Задача не найдена.");
     }
@@ -93,8 +93,8 @@ class Program
             Console.WriteLine("Меню программы:");
             Console.WriteLine("1. Просмотреть список задач.");
             Console.WriteLine("2. Добавить задачу.");
-            Console.WriteLine("3. Обновить состояние задачу.");
-            Console.WriteLine("4. Удалить задачи.");
+            Console.WriteLine("3. Обновить состояние задачи.");
+            Console.WriteLine("4. Удалить задачу.");
             Console.WriteLine("5. Выход.");
             Console.Write("Введите действие: ");
             string choice = Console.ReadLine();
