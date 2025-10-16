@@ -99,6 +99,7 @@ class Program
             Console.WriteLine("4. Удалить задачу.");
             Console.WriteLine("5. Выход.");
             string choice = StringInput("Введите действие: ");
+            Console.Clear();
             if (DoActionManager(choice, taskRep))
             {
                 break;
