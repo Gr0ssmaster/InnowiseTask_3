@@ -1,17 +1,9 @@
 ﻿using Dapper;
+using Task_3.Interfaces;
+using Task_3.Models;
 
-namespace Task_3
+namespace Task_3.Repositories
 {
-    public interface ITaskRepository
-    {
-        IEnumerable<Tasks> GetAllTasks();
-        Tasks GetTaskById(int id);
-        int AddTask(Tasks task);
-        bool DeleteTask(int id);
-        bool UpdateTask(int id, bool isCompleted);
-
-    }
-
     public class TaskRepository : ITaskRepository
     {
         private readonly IDbConnectionFactory _connectionFactory;
@@ -27,11 +19,12 @@ namespace Task_3
             string sql = "SELECT * FROM Tasks";
             return connection.Query<Tasks>(sql);
         }
-        public Tasks GetTaskById(int id) { 
+        public Tasks GetTaskById(int id)
+        {
             using var connection = _connectionFactory.CreateConnection();
             connection.Open();
             string sql = "SELECT * FROM Tasks WHERE Id = @Id";
-            return connection.QueryFirstOrDefault<Tasks>(sql, new { Id = id });  
+            return connection.QueryFirstOrDefault<Tasks>(sql, new { Id = id });
         }
         public int AddTask(Tasks task)
         {

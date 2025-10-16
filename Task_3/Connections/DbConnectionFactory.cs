@@ -1,14 +1,10 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using System.Data;
+using Task_3.Interfaces;
 
-namespace Task_3
+namespace Task_3.Connections
 {
-    public interface IDbConnectionFactory
-    {
-        IDbConnection CreateConnection();
-    }
-
     public class SqlConnectionFactory : IDbConnectionFactory
     {
         private readonly string _connectionString;
@@ -23,6 +19,21 @@ namespace Task_3
         public IDbConnection CreateConnection()
         {
             return new SqlConnection(_connectionString);
+        }
+        public bool TestConnection()
+        {
+            try
+            {
+                using var connection = new SqlConnection(_connectionString);
+                connection.Open();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Ошибка подключения к базе данных!");
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
     }
 }

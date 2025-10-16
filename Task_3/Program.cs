@@ -1,15 +1,20 @@
-﻿using Task_3;
+﻿using Task_3.Connections;
+using Task_3.Interfaces;
+using Task_3.Models;
+using Task_3.Repositories;
 
 class Program
 {
     static void Main(string[] args)
     {
         IDbConnectionFactory connectionFactory = new SqlConnectionFactory();
+        if (!CheckConnection(connectionFactory))
+        {
+            return;
+        }
         ITaskRepository taskRepository = new TaskRepository(connectionFactory);
         Manager(taskRepository);
     }
-
-
     static void ShowAllTasks(ITaskRepository repo)
     {
         var tasks = repo.GetAllTasks();
@@ -17,18 +22,15 @@ class Program
 
         foreach (var t in tasks)
         {
-            Console.WriteLine($"Id: {t.Id}. \nНазвание: {t.Title} \nСтатус: {(t.IsCompleted? "Выполнена" : "Не выполненна" )}" +
+            Console.WriteLine($"Id: {t.Id}. \nНазвание: {t.Title} \nСтатус: {(t.IsCompleted ? "Выполнена" : "Не выполненна")}" +
                 $"\nДата создания: {t.CreatedAt:g} \nОписание: {t.Description}\n");
         }
     }
-
     static void AddTask(ITaskRepository repo)
     {
-        Console.Write("Введите название задачи: ");
-        string title = Console.ReadLine();
+        string title = StringInput("Введите название задачи: ");
 
-        Console.Write("Введите описание задачи: ");
-        string description = Console.ReadLine();
+        string description = StringInput("Введите описание задачи: ");
 
         var task = new Tasks
         {
@@ -44,8 +46,7 @@ class Program
 
     static void DeleteTask(ITaskRepository repo)
     {
-        Console.Write("Введи Id задачи для удаления: ");
-        int id = NumInput("Введите Id задачи: ");
+        int id = NumInput("Введите Id задачи для удаления: ");
         bool deleted = repo.DeleteTask(id);
         Console.WriteLine(deleted ? "Задача успешно удалена." : "Ошибка! Задача не найдена.");
     }
@@ -88,7 +89,8 @@ class Program
 
     static void Manager(ITaskRepository taskRep)
     {
-        while (true) {
+        while (true)
+        {
             Console.Clear();
             Console.WriteLine("Меню программы:");
             Console.WriteLine("1. Просмотреть список задач.");
@@ -96,9 +98,7 @@ class Program
             Console.WriteLine("3. Обновить состояние задачи.");
             Console.WriteLine("4. Удалить задачу.");
             Console.WriteLine("5. Выход.");
-            Console.Write("Введите действие: ");
-            string choice = Console.ReadLine();
-            Console.Clear();
+            string choice = StringInput("Введите действие: ");
             if (DoActionManager(choice, taskRep))
             {
                 break;
@@ -110,7 +110,8 @@ class Program
 
     static bool DoActionManager(string choice, ITaskRepository taskRep)
     {
-        switch (choice) {
+        switch (choice)
+        {
             case "1":
                 ShowAllTasks(taskRep);
                 return false;
@@ -143,5 +144,39 @@ class Program
             }
             return num;
         }
+    }
+    static string StringInput(string message)
+    {
+        while (true)
+        {
+            Console.Write(message);
+            string input = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(input))
+            {
+                return input;
+            }
+            else
+            {
+                Console.WriteLine("Поле не должно быть пустым!");
+            }
+        }
+    }
+    static bool CheckConnection(IDbConnectionFactory connectionFactory)
+    {
+        if (connectionFactory is SqlConnectionFactory sqlFactory)
+        {
+            if (!sqlFactory.TestConnection())
+            {
+                Console.WriteLine("\nНажмите любую клавишу, чтобы выйти.");
+                Console.ReadKey();
+                return false;
+            }
+        }
+        else
+        {
+            Console.WriteLine("Неизвестное подключение.");
+            return false;
+        }
+        return true;
     }
 }
